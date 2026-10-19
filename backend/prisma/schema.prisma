@@ -1,0 +1,277 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(50)
+  description String? @db.VarChar(255)
+
+  users User[]
+
+  @@map("roles")
+}
+
+model Technology {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
+  type String @db.VarChar(20)
+
+  users UserTechnology[]
+
+  @@unique([name, type], map: "uq_technologies_name_type")
+  @@map("technologies")
+}
+
+model FocusArea {
+  id   Int    @id @default(autoincrement())
+  name String @unique(map: "uq_focus_areas_name") @db.VarChar(50)
+
+  users User[]
+
+  @@map("focus_areas")
+}
+
+model LookingForOption {
+  id    Int    @id @default(autoincrement())
+  label String @db.VarChar(50)
+
+  users UserLookingFor[]
+
+  @@map("looking_for_options")
+}
+
+model User {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username            String   @unique(map: "uq_users_username") @db.VarChar(30)
+  email               String   @unique(map: "uq_users_email") @db.VarChar(150)
+  fullName            String   @map("full_name") @db.VarChar(120)
+  githubId            String?  @unique(map: "uq_users_github_id") @map("github_id") @db.VarChar(50)
+  githubUsername      String?  @map("github_username") @db.VarChar(50)
+  githubUrl           String?  @map("github_url") @db.VarChar(255)
+  avatarUrl           String?  @map("avatar_url") @db.VarChar(500)
+  bannerUrl           String?  @map("banner_url") @db.VarChar(500)
+  bioMarkdown         String?  @map("bio_markdown")
+  professionalTitle   String?  @map("professional_title") @db.VarChar(100)
+  roleId              Int?     @map("role_id")
+  focusId             Int?     @map("focus_id")
+  certificates        Json?
+  socialLinks         Json?    @map("social_links")
+  isStudent           Boolean  @default(false) @map("is_student")
+  isVerified          Boolean  @default(false) @map("is_verified")
+  isActive            Boolean  @default(true) @map("is_active")
+  onboardingCompleted Boolean  @default(false) @map("onboarding_completed")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  role      Role?      @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  focusArea FocusArea? @relation(fields: [focusId], references: [id], onDelete: SetNull)
+
+  technologies UserTechnology[]
+  lookingFor   UserLookingFor[]
+
+  following Follow[] @relation("follower")
+  followers Follow[] @relation("followed")
+
+  discoverActionsMade     DiscoverAction[] @relation("discoverUser")
+  discoverActionsReceived DiscoverAction[] @relation("discoverTarget")
+
+  posts        Post[]
+  postLikes    PostLike[]
+  reposts      Repost[]
+  comments     Comment[]
+  commentLikes CommentLike[]
+
+  conversationsAsUser1 Conversation[] @relation("conversationUser1")
+  conversationsAsUser2 Conversation[] @relation("conversationUser2")
+  sentMessages         Message[]
+
+  @@index([roleId], map: "idx_users_role_id")
+  @@index([focusId], map: "idx_users_focus_id")
+  @@map("users")
+}
+
+model UserTechnology {
+  userId       String @map("user_id") @db.Uuid
+  technologyId Int    @map("technology_id")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, technologyId])
+  @@index([technologyId], map: "idx_user_technologies_tech")
+  @@map("user_technologies")
+}
+
+model UserLookingFor {
+  userId       String @map("user_id") @db.Uuid
+  lookingForId Int    @map("looking_for_id")
+
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lookingFor LookingForOption @relation(fields: [lookingForId], references: [id], onDelete: Cascade)
+
+  @@id([userId, lookingForId])
+  @@map("user_looking_for")
+}
+
+model Follow {
+  followerId String   @map("follower_id") @db.Uuid
+  followedId String   @map("followed_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  follower User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("followed", fields: [followedId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followedId])
+  @@index([followedId], map: "idx_follows_followed_id")
+  @@map("follows")
+}
+
+model DiscoverAction {
+  id           BigInt   @id @default(autoincrement())
+  userId       String   @map("user_id") @db.Uuid
+  targetUserId String   @map("target_user_id") @db.Uuid
+  action       String   @db.VarChar(10)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user       User @relation("discoverUser", fields: [userId], references: [id], onDelete: Cascade)
+  targetUser User @relation("discoverTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_discover_actions_user")
+  @@index([targetUserId], map: "idx_discover_actions_target")
+  @@map("discover_actions")
+}
+
+model Post {
+  id        BigInt   @id @default(autoincrement())
+  userId    String   @map("user_id") @db.Uuid
+  content   String
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments PostAttachment[]
+  likes       PostLike[]
+  reposts     Repost[]
+  comments    Comment[]
+
+  @@index([userId], map: "idx_posts_user_id")
+  @@map("posts")
+}
+
+model PostAttachment {
+  id           BigInt  @id @default(autoincrement())
+  postId       BigInt  @map("post_id")
+  type         String  @db.VarChar(10)
+  orderIndex   Int     @map("order_index") @db.SmallInt
+  imageUrl     String? @map("image_url") @db.VarChar(500)
+  codeContent  String? @map("code_content")
+  codeLanguage String? @map("code_language") @db.VarChar(30)
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, orderIndex], map: "idx_post_attachments_post_id")
+  @@map("post_attachments")
+}
+
+model PostLike {
+  postId    BigInt   @map("post_id")
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([postId, userId])
+  @@index([userId], map: "idx_post_likes_user_id")
+  @@map("post_likes")
+}
+
+model Repost {
+  id        BigInt   @id @default(autoincrement())
+  postId    BigInt   @map("post_id")
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId], map: "idx_reposts_post_id")
+  @@index([userId], map: "idx_reposts_user_id")
+  @@map("reposts")
+}
+
+model Comment {
+  id              BigInt   @id @default(autoincrement())
+  postId          BigInt   @map("post_id")
+  userId          String   @map("user_id") @db.Uuid
+  parentCommentId BigInt?  @map("parent_comment_id")
+  content         String
+  isDeleted       Boolean  @default(false) @map("is_deleted")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  post          Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentComment Comment?      @relation("CommentReplies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies       Comment[]     @relation("CommentReplies")
+  likes         CommentLike[]
+
+  @@index([postId], map: "idx_comments_post_id")
+  @@index([userId], map: "idx_comments_user_id")
+  @@index([parentCommentId], map: "idx_comments_parent_id")
+  @@map("comments")
+}
+
+model CommentLike {
+  commentId BigInt   @map("comment_id")
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId])
+  @@index([userId], map: "idx_comment_likes_user_id")
+  @@map("comment_likes")
+}
+
+model Conversation {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user1Id   String   @map("user1_id") @db.Uuid
+  user2Id   String   @map("user2_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  user1    User      @relation("conversationUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2    User      @relation("conversationUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@index([user2Id], map: "idx_conversations_user2")
+  @@map("conversations")
+}
+
+model Message {
+  id             BigInt    @id @default(autoincrement())
+  conversationId String    @map("conversation_id") @db.Uuid
+  senderId       String    @map("sender_id") @db.Uuid
+  content        String?
+  imageUrl       String?   @map("image_url") @db.VarChar(500)
+  codeContent    String?   @map("code_content")
+  codeLanguage   String?   @map("code_language") @db.VarChar(30)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  readAt         DateTime? @map("read_at") @db.Timestamptz
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId], map: "idx_messages_conversation_id")
+  @@index([senderId], map: "idx_messages_sender_id")
+  @@map("messages")
+}

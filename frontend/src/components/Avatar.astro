@@ -1,0 +1,34 @@
+---
+interface Props {
+    src: string | null;
+    alt: string;
+    size?: "sm" | "md" | "lg";
+    class?: string;
+}
+
+const { src, alt, size = "md", class: className } = Astro.props;
+
+const sizes = {
+    sm: "h-8 w-8",
+    md: "h-12 w-12",
+    lg: "h-24 w-24"
+};
+
+const initial = alt.trim().charAt(0).toUpperCase() || "?";
+---
+
+{
+    src ? (
+        <img
+            src={src}
+            alt={alt}
+            class={`${sizes[size]} shrink-0 rounded-full object-cover ${className ?? ""}`}
+        />
+    ) : (
+        <div
+            class={`${sizes[size]} flex shrink-0 items-center justify-center rounded-full bg-surface-hover font-bold text-primary ${className ?? ""}`}
+        >
+            {initial}
+        </div>
+    )
+}

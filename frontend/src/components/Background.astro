@@ -1,0 +1,27 @@
+---
+export interface Props {
+    masked?: boolean;
+}
+
+const { masked } = Astro.props;
+---
+
+<div class="absolute top-0 left-0 -z-10 h-full w-full overflow-hidden">
+    <img src="/bg.png" alt="background" class="h-full w-full object-cover" />
+    {
+        masked && (
+            <div
+                class="absolute inset-0"
+                style="background: linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.55) 0%,
+                    rgba(0, 0, 0, 0.15) 18%,
+                    rgba(0, 0, 0, 0) 38%,
+                    rgba(0, 0, 0, 0.55) 65%,
+                    rgba(0, 0, 0, 0.92) 85%,
+                    rgba(0, 0, 0, 1) 100%
+                );"
+            />
+        )
+    }
+</div>

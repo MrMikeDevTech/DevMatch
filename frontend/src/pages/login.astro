@@ -1,0 +1,26 @@
+---
+import Layout from "@/layouts/LoginLayout.astro";
+import Background from "@/components/Background.astro";
+import Devmatch from "@/components/Devmatch.astro";
+import Github from "@/components/Icons/Github.astro";
+
+const backendUrl = import.meta.env.BACKEND_URL ?? "http://localhost:5001";
+---
+
+<Layout>
+    <Background masked />
+    <div class="flex min-h-dvh flex-col items-center justify-end gap-10 pb-40">
+        <div class="flex w-full flex-col items-center justify-center gap-2">
+            <Devmatch />
+            <p class="text-center text-lg font-bold text-gray-400">Encuentra a tu proximo equipo</p>
+        </div>
+
+        <a
+            href={`${backendUrl}/auth/github`}
+            class="mt-10 flex gap-4 rounded bg-purple-400 px-10 py-4 font-bold text-white outline-0 transition-all duration-150 ease-in-out hover:cursor-pointer hover:brightness-90 active:scale-95 active:brightness-80"
+        >
+            <Github />
+            <span> Inicia sesión con GitHub </span>
+        </a>
+    </div>
+</Layout>

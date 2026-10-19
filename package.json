@@ -1,0 +1,31 @@
+{
+  "name": "devmatch",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Monorepo DevMatch - Frontend + Backend",
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/bun": "latest",
+    "eslint": "10.6.0",
+    "globals": "17.7.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.62.1"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev:backend": "bun run --filter backend dev",
+    "start:backend": "bun run --filter backend start",
+    "build:backend": "bun run --filter backend build",
+    "dev:frontend": "bun run --filter frontend dev",
+    "build:frontend": "bun run --filter frontend build",
+    "preview:frontend": "bun run --filter frontend preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "astro-icon": "^1.2.0",
+    "tailwindcss": "^4.3.3"
+  }
+}

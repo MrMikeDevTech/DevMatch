@@ -1,0 +1,37 @@
+{
+  "name": "backend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run --env-file=../.env index.ts",
+    "dev": "bun run --watch --env-file=../.env index.ts",
+    "build": "bun build index.ts --compile",
+    "lint": "eslint .",
+    "check": "tsc --noEmit",
+    "prisma": "bash scripts/prisma.sh",
+    "db:reset": "bun run --env-file=../.env scripts/reset-db.ts",
+    "db:seed": "bun run --env-file=../.env prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/pg": "^8.23.1",
+    "@types/ws": "^8.18.2",
+    "dotenv": "^18.0.8"
+  },
+  "peerDependencies": {
+    "typescript": "5"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.1",
+    "@prisma/client": "7.10.1",
+    "cloudinary": "^2.11.0",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "pg": "^8.23.1",
+    "prisma": "7.10.1",
+    "ws": "^8.22.0"
+  }
+}

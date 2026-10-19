@@ -1,0 +1,15 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { backendJson } from "@/lib/api";
+import Feed from "@/components/react/Feed";
+import type { Post } from "@/components/react/PostCard";
+
+const feedData = await backendJson<{ posts: Post[]; nextCursor: string | null }>(
+    Astro.request,
+    "/posts/feed?limit=20"
+);
+---
+
+<AppLayout title="Inicio" active="home">
+    <Feed client:load initialPosts={feedData?.posts ?? []} initialCursor={feedData?.nextCursor ?? null} />
+</AppLayout>

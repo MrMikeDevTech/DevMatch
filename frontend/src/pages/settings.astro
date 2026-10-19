@@ -1,0 +1,27 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { backendJson } from "@/lib/api";
+import EditProfileForm from "@/components/react/EditProfileForm";
+
+type Me = {
+    username: string;
+    avatarUrl: string | null;
+    bannerUrl: string | null;
+    fullName: string;
+    professionalTitle: string | null;
+    bioMarkdown: string | null;
+};
+
+const meData = await backendJson<{ user: Me }>(Astro.request, "/users/me");
+
+if (!meData) {
+    return Astro.redirect("/");
+}
+---
+
+<AppLayout title="Editar perfil" active="settings">
+    <div class="px-6 py-10">
+        <h1 class="mb-6 text-2xl font-bold">Editar perfil</h1>
+        <EditProfileForm client:load {...meData.user} />
+    </div>
+</AppLayout>

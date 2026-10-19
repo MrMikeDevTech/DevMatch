@@ -1,0 +1,94 @@
+---
+import { backendJson } from "@/lib/api";
+import Home from "@/components/Icons/Home.astro";
+import Compass from "@/components/Icons/Compass.astro";
+import Settings from "@/components/Icons/Settings.astro";
+import LogOut from "@/components/Icons/LogOut.astro";
+import MessageCircle from "@/components/Icons/MessageCircle.astro";
+import Avatar from "@/components/Avatar.astro";
+
+interface Props {
+    active?: "home" | "discover" | "messages" | "settings";
+    username: string;
+    fullName: string;
+    avatarUrl: string | null;
+}
+
+const { active, username, fullName, avatarUrl } = Astro.props;
+
+const messagesData = await backendJson<{ conversations: Array<{ unreadCount: number }> }>(
+    Astro.request,
+    "/messages"
+);
+const unreadCount = messagesData?.conversations.reduce((sum, c) => sum + c.unreadCount, 0) ?? 0;
+
+const navItems = [
+    { key: "home", href: "/", label: "Inicio", icon: Home },
+    { key: "discover", href: "/discover", label: "Descubrir", icon: Compass },
+    { key: "messages", href: "/messages", label: "Mensajes", icon: MessageCircle, badge: unreadCount },
+    { key: "settings", href: "/settings", label: "Ajustes", icon: Settings }
+] as const;
+---
+
+<aside class="flex h-dvh w-64 shrink-0 flex-col justify-between border-r border-border bg-surface p-4">
+    <div class="flex flex-col gap-6">
+        <div class="flex items-center gap-2 px-2">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary font-bold text-black">D</div>
+            <div>
+                <p class="text-lg leading-tight font-bold text-white">DevMatch</p>
+                <p class="text-xs leading-tight text-text-muted">CUCosta Developer Network</p>
+            </div>
+        </div>
+
+        <nav class="flex flex-col gap-1">
+            {
+                navItems.map((item) => (
+                    <a
+                        href={item.href}
+                        class={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                            active === item.key
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-muted hover:bg-surface-hover hover:text-white"
+                        }`}
+                    >
+                        <span class="flex items-center gap-3">
+                            <item.icon class="h-5 w-5" />
+                            {item.label}
+                        </span>
+                        {"badge" in item && item.badge > 0 && (
+                            <span class="rounded-full bg-primary px-2 py-0.5 text-xs font-bold text-black">
+                                {item.badge}
+                            </span>
+                        )}
+                    </a>
+                ))
+            }
+        </nav>
+
+        <a
+            href="/compose"
+            class="rounded-lg bg-primary px-4 py-2 text-center text-sm font-bold text-black transition hover:brightness-90"
+        >
+            + Crear post
+        </a>
+    </div>
+
+    <div class="flex flex-col gap-1">
+        <a
+            href={`/profile/${username}`}
+            class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-text-muted hover:bg-surface-hover hover:text-white"
+        >
+            <Avatar src={avatarUrl} alt={fullName} size="sm" />
+            <span class="truncate">{fullName}</span>
+        </a>
+        <form method="post" action="/logout">
+            <button
+                type="submit"
+                class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-text-muted hover:bg-surface-hover hover:text-white"
+            >
+                <LogOut class="h-5 w-5" />
+                Cerrar sesión
+            </button>
+        </form>
+    </div>
+</aside>

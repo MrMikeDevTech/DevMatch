@@ -1,0 +1,30 @@
+---
+import "@/styles/global.css";
+import { backendJson } from "@/lib/api";
+import OnboardingWizard from "@/components/react/OnboardingWizard";
+
+const { user } = Astro.locals;
+
+const focusData = await backendJson<{ focusAreas: Array<{ id: number; name: string }> }>(
+    Astro.request,
+    "/catalog/focus-areas"
+);
+---
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Configurá tu perfil · DevMatch</title>
+    </head>
+    <body class="flex min-h-dvh items-center justify-center bg-bg px-4 py-12 text-white">
+        <OnboardingWizard
+            client:load
+            focusAreas={focusData?.focusAreas ?? []}
+            initialUsername={user?.username ?? ""}
+            initialFullName={user?.fullName ?? ""}
+            avatarUrl={user?.avatarUrl ?? null}
+        />
+    </body>
+</html>

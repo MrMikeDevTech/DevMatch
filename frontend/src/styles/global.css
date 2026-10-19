@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "highlight.js/styles/github-dark.css";
+
+@theme {
+    --color-bg: #09090f;
+    --color-surface: #13131d;
+    --color-surface-hover: #1b1b28;
+    --color-border: #242435;
+    --color-primary: #a78bfa;
+    --color-primary-hover: #9370f0;
+    --color-text-muted: #9ca3af;
+}
+
+@layer base {
+    button:not(:disabled),
+    [role="button"],
+    a,
+    label[for] {
+        cursor: pointer;
+    }
+}

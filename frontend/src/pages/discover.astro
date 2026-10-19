@@ -1,0 +1,25 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { backendJson } from "@/lib/api";
+import DiscoverDeck from "@/components/react/DiscoverDeck";
+
+const queueData = await backendJson<{
+    candidates: Array<{
+        id: string;
+        username: string;
+        fullName: string;
+        avatarUrl: string | null;
+        bannerUrl: string | null;
+        professionalTitle: string | null;
+        bioMarkdown: string | null;
+        isVerified: boolean;
+        technologies: Array<{ id: number; name: string; type: "language" | "framework" }>;
+    }>;
+}>(Astro.request, "/discover/queue?limit=10");
+---
+
+<AppLayout title="Descubrir" active="discover">
+    <div class="px-6 py-10">
+        <DiscoverDeck client:load initialQueue={queueData?.candidates ?? []} />
+    </div>
+</AppLayout>

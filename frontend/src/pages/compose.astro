@@ -1,0 +1,11 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import ComposeForm from "@/components/react/ComposeForm";
+---
+
+<AppLayout title="Crear post">
+    <div class="mx-auto max-w-2xl py-6">
+        <h1 class="mb-4 px-6 text-xl font-bold">Crear post</h1>
+        <ComposeForm client:load />
+    </div>
+</AppLayout>

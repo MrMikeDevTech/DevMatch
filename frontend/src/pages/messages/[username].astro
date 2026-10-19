@@ -1,0 +1,57 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { backendJson, backendFetch } from "@/lib/api";
+import ConversationsAside from "@/components/ConversationsAside.astro";
+import ChatWindow from "@/components/react/ChatWindow";
+
+const { username } = Astro.params;
+const { user } = Astro.locals;
+
+type Conversation = {
+    id: string;
+    otherUser: { id: string; username: string; fullName: string; avatarUrl: string | null };
+    isFriends: boolean;
+    lastMessage: { content: string; createdAt: string; isMine: boolean } | null;
+    unreadCount: number;
+    updatedAt: string;
+};
+
+const [conversationsData, historyData] = await Promise.all([
+    backendJson<{ conversations: Conversation[] }>(Astro.request, "/messages"),
+    backendJson<{
+        conversationId: string;
+        otherUser: { id: string; username: string; fullName: string; avatarUrl: string | null };
+        messages: Array<{
+            id: string;
+            conversationId: string;
+            content: string | null;
+            imageUrl: string | null;
+            codeContent: string | null;
+            codeLanguage: string | null;
+            createdAt: string;
+            sender: { id: string; username: string; fullName: string; avatarUrl: string | null };
+        }>;
+    }>(Astro.request, `/messages/${username}`)
+]);
+
+if (!historyData) {
+    return Astro.redirect("/messages");
+}
+
+await backendFetch(Astro.request, `/messages/${username}/read`, { method: "POST" });
+
+const conversations = conversationsData?.conversations ?? [];
+---
+
+<AppLayout title={`Chat con ${historyData.otherUser.fullName}`} active="messages">
+    <div class="flex h-full overflow-hidden">
+        <ConversationsAside conversations={conversations} activeUsername={username} />
+        <ChatWindow
+            client:load
+            conversationId={historyData.conversationId}
+            otherUser={historyData.otherUser}
+            currentUserId={user!.id}
+            initialMessages={historyData.messages}
+        />
+    </div>
+</AppLayout>
