@@ -8,7 +8,7 @@
     "scripts": {
         "dev": "astro dev --port 5000 --host",
         "build": "astro build",
-        "preview": "astro preview --port 5000 --host",
+        "preview": "vercel dev --listen 5000",
         "astro": "astro",
         "lint": "eslint .",
         "check": "astro check"
@@ -43,6 +43,7 @@
         "prettier-plugin-astro": "^0.14.1",
         "prettier-plugin-tailwindcss": "^0.6.11",
         "typescript": "6.0.3",
-        "typescript-eslint": "8.62.1"
+        "typescript-eslint": "8.62.1",
+        "vercel": "^64.7.0"
     }
 }

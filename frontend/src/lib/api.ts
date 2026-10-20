@@ -12,7 +12,12 @@ export async function backendFetch(request: Request, path: string, init: Request
 }
 
 export async function backendJson<T>(request: Request, path: string, init: RequestInit = {}): Promise<T | null> {
-    const response = await backendFetch(request, path, init);
-    if (!response.ok) return null;
-    return (await response.json()) as T;
+    try {
+        const response = await backendFetch(request, path, init);
+        if (!response.ok) return null;
+        return (await response.json()) as T;
+    } catch (error) {
+        console.error(`backendJson(${path}) failed:`, error);
+        return null;
+    }
 }

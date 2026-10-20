@@ -5,7 +5,7 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 
 export default [
-    { ignores: ["node_modules", "dist", ".astro"] },
+    { ignores: ["node_modules", "dist", ".astro", ".vercel"] },
     { files: ["**/*.{js,mjs,cjs,ts,astro}"] },
     { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
     pluginJs.configs.recommended,
