@@ -17,6 +17,13 @@ jobs:
         with:
           clean: false
 
+      - name: Write env files
+        env:
+          PROD_ENV: ${{ secrets.PROD_ENV }}
+        run: |
+          echo "$PROD_ENV" > .env
+          echo "$PROD_ENV" > backend/.env
+
       - name: Build backend image
         run: docker compose -f docker-compose.prod.yml build backend
 
