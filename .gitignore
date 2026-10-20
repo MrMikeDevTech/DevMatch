@@ -10,6 +10,8 @@ backend/uploads/
 
 .env
 .env.*.local
+backend/.env
+frontend/.env
 
 *.log
 npm-debug.log*

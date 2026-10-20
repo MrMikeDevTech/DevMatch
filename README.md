@@ -117,9 +117,32 @@ Red social para desarrolladores de CUCosta/UdeG: encontrá gente con tu stack, s
 
 ## Despliegue
 
-Pensado para **frontend en Vercel** (adapter `@astrojs/vercel`) y **backend en un servidor propio**:
+**Frontend en Vercel** (adapter `@astrojs/vercel`, dominio `https://devmatch.mrmikedev.site`) y **backend en VPS propio** (dominio `https://backdevmatch.mrmikedev.site`, expuesto vía Cloudflare Tunnel):
 
-- Seteá `FRONTEND_URL` / `BACKEND_URL` / `PUBLIC_BACKEND_URL` a las URLs reales de producción (en Vercel, como variables de entorno del proyecto).
-- `NODE_ENV=production` en el backend activa `SameSite=None; Secure` en la cookie de sesión (necesario porque los dos dominios son distintos).
-- El callback de GitHub OAuth App debe apuntar a `https://tu-backend/auth/github/callback`.
-- **El servidor de WebSockets (`backend/lib/ws.ts`) necesita quedarse en el backend propio**: las funciones serverless de Vercel no soportan conexiones persistentes como WebSocket, así que la mensajería en tiempo real sigue dependiendo de que el backend corra en un servidor tradicional (no en Vercel).
+### Backend (VPS)
+
+- Variables de entorno en `backend/.env` (valores de producción):
+  - `NODE_ENV=production` — activa `SameSite=None; Secure` en la cookie (necesario porque frontend y backend viven en dominios distintos)
+  - `FRONTEND_URL=https://devmatch.mrmikedev.site`
+  - `GITHUB_CALLBACK_URL=https://backdevmatch.mrmikedev.site/auth/github/callback`
+  - `DATABASE_URL`, `CLOUDINARY_*`, `GITHUB_CLIENT_ID/SECRET`, `SESSION_SECRET` — con valores de producción
+
+- Cloudflare Tunnel (Zero Trust) expone `localhost:<puerto-backend>` como `https://backdevmatch.mrmikedev.site` (TLS manejado por Cloudflare, sin nginx/Caddy necesario)
+
+- Levantar con `docker-compose.prod.yml` (incluye Postgres + backend; ver `backend/Dockerfile`)
+
+- **WebSockets**: el servidor (`backend/lib/ws.ts`) corre en el VPS (las funciones serverless de Vercel no soportan conexiones persistentes)
+
+### Frontend (Vercel)
+
+- Variables de entorno en Project Settings → Environment Variables, correspondientes a `frontend/.env`:
+  - `BACKEND_URL=https://backdevmatch.mrmikedev.site`
+  - `PUBLIC_BACKEND_URL=https://backdevmatch.mrmikedev.site`
+
+- Proyecto ya linkeado en `.vercel/repo.json`
+
+### GitHub OAuth App
+
+- Configurar en https://github.com/settings/developers:
+  - Homepage URL: `https://devmatch.mrmikedev.site`
+  - Authorization callback URL: `https://backdevmatch.mrmikedev.site/auth/github/callback`

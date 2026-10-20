@@ -10,7 +10,6 @@ export default defineConfig({
     adapter: vercel(),
     integrations: [react()],
     vite: {
-        envDir: "../",
         plugins: [tailwindcss()]
     }
 });
