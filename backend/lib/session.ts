@@ -17,13 +17,15 @@ export function createSessionCookie(userId: string): string {
     const signature = sign(payload);
     const value = `${payload}.${signature}`;
     const isProd = process.env.NODE_ENV === "production";
+    const cookieDomain = process.env.COOKIE_DOMAIN;
     return [
         `${SESSION_COOKIE}=${value}`,
         "Path=/",
         "HttpOnly",
         `SameSite=${isProd ? "None" : "Lax"}`,
         "Max-Age=604800",
-        isProd ? "Secure" : ""
+        isProd ? "Secure" : "",
+        cookieDomain ? `Domain=${cookieDomain}` : ""
     ]
         .filter(Boolean)
         .join("; ");
@@ -31,13 +33,15 @@ export function createSessionCookie(userId: string): string {
 
 export function clearSessionCookie(): string {
     const isProd = process.env.NODE_ENV === "production";
+    const cookieDomain = process.env.COOKIE_DOMAIN;
     return [
         `${SESSION_COOKIE}=`,
         "Path=/",
         "HttpOnly",
         `SameSite=${isProd ? "None" : "Lax"}`,
         "Max-Age=0",
-        isProd ? "Secure" : ""
+        isProd ? "Secure" : "",
+        cookieDomain ? `Domain=${cookieDomain}` : ""
     ]
         .filter(Boolean)
         .join("; ");

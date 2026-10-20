@@ -126,6 +126,7 @@ Red social para desarrolladores de CUCosta/UdeG: encontrá gente con tu stack, s
   - `FRONTEND_URL=https://devmatch.mrmikedev.site`
   - `GITHUB_CALLBACK_URL=https://backdevmatch.mrmikedev.site/auth/github/callback`
   - `DATABASE_URL`, `CLOUDINARY_*`, `GITHUB_CLIENT_ID/SECRET`, `SESSION_SECRET` — con valores de producción
+  - `COOKIE_DOMAIN` (opcional, solo producción) — dominio padre para la cookie cuando frontend y backend viven en subdominios distintos (ej. `COOKIE_DOMAIN=.mrmikedev.site` para `devmatch.mrmikedev.site` y `backdevmatch.mrmikedev.site`). Sin definir, la cookie queda host-only (lo que se usa en desarrollo local)
 
 - Cloudflare Tunnel (Zero Trust) expone `localhost:<puerto-backend>` como `https://backdevmatch.mrmikedev.site` (TLS manejado por Cloudflare, sin nginx/Caddy necesario)
 
