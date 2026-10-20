@@ -2,13 +2,15 @@
 import "@/styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Sidebar from "@/components/Sidebar.astro";
+import SEO from "@/components/SEO.astro";
 
 interface Props {
     title: string;
+    description?: string;
     active?: "home" | "discover" | "messages" | "settings";
 }
 
-const { title, active } = Astro.props;
+const { title, description, active } = Astro.props;
 const { user } = Astro.locals;
 ---
 
@@ -19,6 +21,11 @@ const { user } = Astro.locals;
         <link rel="icon" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width" />
         <title>{title} · DevMatch</title>
+        <SEO
+            title={`${title} · DevMatch`}
+            description={description ?? "Red social para desarrolladores: conectá con gente de tu stack."}
+            noindex
+        />
         <ClientRouter />
     </head>
     <body class="bg-bg text-white">

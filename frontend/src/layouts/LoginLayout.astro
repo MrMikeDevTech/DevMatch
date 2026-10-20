@@ -1,5 +1,10 @@
 ---
 import "@/styles/global.css";
+import SEO from "@/components/SEO.astro";
+
+const title = "DevMatch · Encontrá a tu próximo equipo";
+const description =
+    "Red social para desarrolladores: conectá con gente de tu stack, compartí código y encontrá tu próximo equipo.";
 ---
 
 <html lang="es">
@@ -8,7 +13,8 @@ import "@/styles/global.css";
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width" />
-        <title>DevMatch</title>
+        <title>{title}</title>
+        <SEO title={title} description={description} />
     </head>
     <body class="h-dvh">
         <slot />
