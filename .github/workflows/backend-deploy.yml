@@ -28,7 +28,7 @@ jobs:
         run: docker compose -f docker-compose.prod.yml build backend
 
       - name: Deploy
-        run: docker compose -f docker-compose.prod.yml up -d --no-deps backend
+        run: docker compose -f docker-compose.prod.yml up -d backend
 
       - name: Run pending migrations
         run: docker compose -f docker-compose.prod.yml exec -T backend bunx prisma migrate deploy --config prisma7.config.ts
