@@ -5,7 +5,7 @@ Red social para desarrolladores de CUCosta/UdeG: encontrá gente con tu stack, s
 ## Stack
 
 - **Monorepo** con [Bun workspaces](https://bun.sh/docs/install/workspaces) (`backend/` + `frontend/`)
-- **Frontend**: [Astro](https://astro.build) 7 (SSR, adapter de Node) + React (solo para las islas interactivas) + Tailwind CSS v4
+- **Frontend**: [Astro](https://astro.build) 7 (SSR, adapter de Vercel) + React (solo para las islas interactivas) + Tailwind CSS v4
 - **Backend**: Express 5 sobre Bun + [Prisma](https://www.prisma.io) 7 (driver adapter `pg`, sin motor de queries nativo)
 - **Base de datos**: PostgreSQL (vía Docker)
 - **Imágenes**: Cloudinary (avatar, banner, fotos de post/chat — siempre convertidas a WebP)
@@ -117,8 +117,9 @@ Red social para desarrolladores de CUCosta/UdeG: encontrá gente con tu stack, s
 
 ## Despliegue
 
-Pensado para **frontend en Vercel** y **backend en un servidor propio**:
+Pensado para **frontend en Vercel** (adapter `@astrojs/vercel`) y **backend en un servidor propio**:
 
-- Seteá `FRONTEND_URL` / `BACKEND_URL` / `PUBLIC_BACKEND_URL` a las URLs reales de producción.
+- Seteá `FRONTEND_URL` / `BACKEND_URL` / `PUBLIC_BACKEND_URL` a las URLs reales de producción (en Vercel, como variables de entorno del proyecto).
 - `NODE_ENV=production` en el backend activa `SameSite=None; Secure` en la cookie de sesión (necesario porque los dos dominios son distintos).
 - El callback de GitHub OAuth App debe apuntar a `https://tu-backend/auth/github/callback`.
+- **El servidor de WebSockets (`backend/lib/ws.ts`) necesita quedarse en el backend propio**: las funciones serverless de Vercel no soportan conexiones persistentes como WebSocket, así que la mensajería en tiempo real sigue dependiendo de que el backend corra en un servidor tradicional (no en Vercel).
