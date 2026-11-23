@@ -29,7 +29,7 @@ const { user } = Astro.locals;
         <ClientRouter />
     </head>
     <body class="bg-bg text-white">
-        <div class="flex min-h-dvh">
+        <div class="flex h-dvh overflow-hidden">
             <Sidebar
                 active={active}
                 username={user?.username ?? ""}
