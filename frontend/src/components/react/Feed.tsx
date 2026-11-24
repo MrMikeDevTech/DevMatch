@@ -10,6 +10,7 @@ type Scope = "forYou" | "following";
 type Props = {
     initialPosts: Post[];
     initialCursor: string | null;
+    currentUserId?: string;
 };
 
 async function fetchFeedPage(scope: Scope, cursor: string | null) {
@@ -19,7 +20,7 @@ async function fetchFeedPage(scope: Scope, cursor: string | null) {
     return (await response.json()) as { posts: Post[]; nextCursor: string | null };
 }
 
-export default function Feed({ initialPosts, initialCursor }: Props) {
+export default function Feed({ initialPosts, initialCursor, currentUserId }: Props) {
     const [scope, setScope] = useState<Scope>("forYou");
     const [posts, setPosts] = useState(initialPosts);
     const [cursor, setCursor] = useState(initialCursor);
@@ -71,7 +72,7 @@ export default function Feed({ initialPosts, initialCursor }: Props) {
 
             <PostComposer onCreated={(post) => setPosts((prev) => [post, ...prev])} />
             {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} currentUserId={currentUserId} />
             ))}
             {cursor && (
                 <div ref={ref} className="py-6 text-center text-xs text-text-muted">
@@ -81,7 +82,7 @@ export default function Feed({ initialPosts, initialCursor }: Props) {
             {!cursor && posts.length === 0 && !loading && (
                 <p className="py-12 text-center text-sm text-text-muted">
                     {scope === "following"
-                        ? "Acá van a aparecer los posts de la gente que seguís."
+                        ? "Aquí van a aparecer los posts de la gente que sigues."
                         : "Todavía no hay posts. ¡Sé el primero en compartir algo!"}
                 </p>
             )}

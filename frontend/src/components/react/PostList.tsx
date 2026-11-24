@@ -1,6 +1,6 @@
 import PostCard, { type Post } from "@/components/react/PostCard";
 
-export default function PostList({ posts }: { posts: Post[] }) {
+export default function PostList({ posts, currentUserId }: { posts: Post[]; currentUserId?: string }) {
     if (posts.length === 0) {
         return <p className="py-12 text-center text-sm text-text-muted">Todavía no hay posts.</p>;
     }
@@ -8,7 +8,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
     return (
         <div>
             {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} currentUserId={currentUserId} />
             ))}
         </div>
     );

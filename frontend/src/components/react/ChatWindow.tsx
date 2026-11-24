@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import MessageBubble from "@/components/react/MessageBubble";
-import { highlightCode } from "@/lib/highlight";
+import CodeBlockEditor from "@/components/react/CodeBlockEditor";
+import ImageLightbox from "@/components/react/ImageLightbox";
 
 const BACKEND_URL = import.meta.env.PUBLIC_BACKEND_URL ?? "http://localhost:5001";
 const WS_URL = `${BACKEND_URL.replace(/^http/, "ws")}/ws`;
@@ -30,7 +31,9 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
     const [draft, setDraft] = useState("");
     const [connected, setConnected] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
     const [pendingImageUrl, setPendingImageUrl] = useState<string | null>(null);
+    const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
     const [showCodeField, setShowCodeField] = useState(false);
     const [codeContent, setCodeContent] = useState("");
     const [codeLanguage, setCodeLanguage] = useState("");
@@ -86,6 +89,7 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
 
     async function handleImageSelected(file: File) {
         setUploading(true);
+        setUploadError(null);
         try {
             const form = new FormData();
             form.append("image", file);
@@ -97,7 +101,12 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
             if (response.ok) {
                 const data = (await response.json()) as { url: string };
                 setPendingImageUrl(data.url);
+            } else {
+                const data = (await response.json().catch(() => ({}))) as { error?: string };
+                setUploadError(data.error ?? "Error al subir el archivo");
             }
+        } catch {
+            setUploadError("Error al subir el archivo");
         } finally {
             setUploading(false);
         }
@@ -128,8 +137,13 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
     }
 
     return (
-        <div className="flex h-full flex-1 flex-col">
-            <div className="flex items-center gap-3 border-b border-border px-6 py-4">
+        <div className="flex h-full min-w-0 flex-1 flex-col">
+            <div className="flex items-center gap-3 border-b border-border px-4 py-4 sm:px-6">
+                <a href="/messages" aria-label="Volver a mensajes" className="shrink-0 text-text-muted hover:text-white md:hidden">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </a>
                 {otherUser.avatarUrl ? (
                     <img src={otherUser.avatarUrl} alt={otherUser.fullName} className="h-10 w-10 rounded-full" />
                 ) : (
@@ -147,10 +161,10 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
                 </div>
             </div>
 
-            <div className="flex-1 space-y-3 overflow-y-auto px-6 py-4">
+            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-6">
                 {messages.length === 0 && (
                     <p className="py-12 text-center text-sm text-text-muted">
-                        Todavía no hay mensajes. ¡Saludá a {otherUser.fullName.split(" ")[0]}!
+                        Todavía no hay mensajes. ¡Saluda a {otherUser.fullName.split(" ")[0]}!
                     </p>
                 )}
                 {messages.map((message) => (
@@ -159,13 +173,18 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
                 <div ref={bottomRef} />
             </div>
 
-            <div className="border-t border-border px-6 py-4">
+            <div className="border-t border-border px-4 py-4 sm:px-6">
+                {uploadError && <p className="mb-2 text-xs text-red-400">{uploadError}</p>}
+
                 {pendingImageUrl && (
                     <div className="relative mb-2 inline-block">
-                        <img src={pendingImageUrl} alt="" className="h-20 w-20 rounded-lg object-cover" />
+                        <button type="button" onClick={() => setPreviewImageUrl(pendingImageUrl)} className="block">
+                            <img src={pendingImageUrl} alt="" className="h-20 w-20 rounded-lg object-cover" />
+                        </button>
                         <button
                             type="button"
                             onClick={() => setPendingImageUrl(null)}
+                            aria-label="Quitar imagen"
                             className="absolute -top-2 -right-2 rounded-full bg-surface-hover px-1.5 text-white"
                         >
                             ×
@@ -174,34 +193,17 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
                 )}
 
                 {showCodeField && (
-                    <div className="mb-2 rounded-lg border border-border bg-bg p-3">
-                        <input
-                            value={codeLanguage}
-                            onChange={(e) => setCodeLanguage(e.target.value)}
-                            placeholder="lenguaje (opcional)"
-                            className="mb-2 w-full bg-transparent text-xs text-text-muted outline-none"
+                    <div className="mb-2 space-y-2">
+                        <CodeBlockEditor
+                            content={codeContent}
+                            language={codeLanguage}
+                            onContentChange={setCodeContent}
+                            onLanguageChange={setCodeLanguage}
                         />
-                        <textarea
-                            value={codeContent}
-                            onChange={(e) => setCodeContent(e.target.value)}
-                            rows={3}
-                            placeholder="pegá tu código..."
-                            className="w-full resize-none bg-transparent font-mono text-xs text-white outline-none"
-                        />
-                        {codeContent.trim() &&
-                            (() => {
-                                const { html, language } = highlightCode(codeContent, codeLanguage);
-                                return (
-                                    <pre className="mt-2 overflow-x-auto rounded-lg border border-border bg-black/30 p-3 text-xs">
-                                        <code
-                                            className={`hljs language-${language}`}
-                                            dangerouslySetInnerHTML={{ __html: html }}
-                                        />
-                                    </pre>
-                                );
-                            })()}
                     </div>
                 )}
+
+                {previewImageUrl && <ImageLightbox src={previewImageUrl} onClose={() => setPreviewImageUrl(null)} />}
 
                 <div className="flex items-center gap-2">
                     <button
@@ -245,7 +247,7 @@ export default function ChatWindow({ conversationId, otherUser, currentUserId, i
                         onKeyDown={(e) => {
                             if (e.key === "Enter") send();
                         }}
-                        placeholder="Escribí un mensaje..."
+                        placeholder="Escribe un mensaje..."
                         className="flex-1 rounded-lg border border-border bg-bg px-4 py-2 text-sm text-white placeholder-text-muted outline-none focus:border-primary"
                     />
                     <button

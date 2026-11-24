@@ -50,7 +50,7 @@ export default function BannerUploadField({
                     <img src={value} alt="Banner" className="h-full w-full object-cover" />
                 ) : (
                     <span className="flex h-full w-full items-center justify-center text-xs text-text-muted">
-                        Hacé clic para subir un banner
+                        Haz clic para subir un banner
                     </span>
                 )}
                 {uploading && (

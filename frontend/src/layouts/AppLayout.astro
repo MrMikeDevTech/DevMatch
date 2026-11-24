@@ -19,24 +19,24 @@ const { user } = Astro.locals;
         <meta charset="utf-8" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.svg" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{title} · DevMatch</title>
         <SEO
             title={`${title} · DevMatch`}
-            description={description ?? "Red social para desarrolladores: conectá con gente de tu stack."}
+            description={description ?? "Red social para desarrolladores: conecta con gente de tu stack."}
             noindex
         />
         <ClientRouter />
     </head>
     <body class="bg-bg text-white">
-        <div class="flex h-dvh overflow-hidden">
+        <div class="flex h-dvh flex-col overflow-hidden md:flex-row">
             <Sidebar
                 active={active}
                 username={user?.username ?? ""}
                 fullName={user?.fullName ?? ""}
                 avatarUrl={user?.avatarUrl ?? null}
             />
-            <main class="min-w-0 flex-1 overflow-y-auto">
+            <main class="min-w-0 min-h-0 flex-1 overflow-y-auto">
                 <slot />
             </main>
         </div>

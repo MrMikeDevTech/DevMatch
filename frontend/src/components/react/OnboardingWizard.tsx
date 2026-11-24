@@ -173,7 +173,7 @@ export default function OnboardingWizard({ focusAreas, initialUsername, initialF
             }
             window.location.href = "/";
         } catch {
-            setError("Error de red, intentá de nuevo");
+            setError("Error de red, intenta de nuevo");
             setSubmitting(false);
         }
     }
@@ -243,7 +243,7 @@ export default function OnboardingWizard({ focusAreas, initialUsername, initialF
                 <div>
                     <h1 className="text-2xl font-bold text-white">¿Cuál es tu rol?</h1>
                     <p className="mt-1 text-sm text-text-muted">
-                        Elegí tu enfoque principal para ayudarnos a conectarte con la gente indicada
+                        Elige tu enfoque principal para ayudarnos a conectarte con la gente indicada
                     </p>
                     <div className="mt-6 grid grid-cols-2 gap-3">
                         {focusAreas.map((area) => (
@@ -279,9 +279,9 @@ export default function OnboardingWizard({ focusAreas, initialUsername, initialF
 
             {step === 3 && (
                 <div>
-                    <h1 className="text-2xl font-bold text-white">¿Con qué programás?</h1>
+                    <h1 className="text-2xl font-bold text-white">¿Con qué programas?</h1>
                     <p className="mt-1 text-sm text-text-muted">
-                        Armá tu stack para que podamos conectarte con gente y proyectos afines a tu experiencia.
+                        Arma tu stack para que podamos conectarte con gente y proyectos afines a tu experiencia.
                     </p>
                     <div className="mt-6 flex flex-col gap-6">
                         <TechSearchField
@@ -314,9 +314,9 @@ export default function OnboardingWizard({ focusAreas, initialUsername, initialF
 
             {step === 4 && (
                 <div>
-                    <h1 className="text-center text-2xl font-bold text-white">Confirmá tus datos</h1>
+                    <h1 className="text-center text-2xl font-bold text-white">Confirma tus datos</h1>
                     <p className="mt-1 text-center text-sm text-text-muted">
-                        Revisá la vista previa de tu perfil antes de terminar.
+                        Revisa la vista previa de tu perfil antes de terminar.
                     </p>
                     <div className="mt-6 rounded-xl border border-border bg-surface p-6">
                         <div className="flex items-center gap-4">

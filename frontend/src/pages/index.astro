@@ -8,8 +8,14 @@ const feedData = await backendJson<{ posts: Post[]; nextCursor: string | null }>
     Astro.request,
     "/posts/feed?limit=20"
 );
+const { user } = Astro.locals;
 ---
 
 <AppLayout title="Inicio" active="home">
-    <Feed client:load initialPosts={feedData?.posts ?? []} initialCursor={feedData?.nextCursor ?? null} />
+    <Feed
+        client:load
+        initialPosts={feedData?.posts ?? []}
+        initialCursor={feedData?.nextCursor ?? null}
+        currentUserId={user?.id}
+    />
 </AppLayout>

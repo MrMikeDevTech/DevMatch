@@ -5,6 +5,7 @@ import type { Prisma } from "@/lib/generated/prisma/client";
 
 const router = Router();
 const MAX_CONTENT_LENGTH = 5000;
+const MAX_CODE_BLOCKS = 5;
 
 type AttachmentInput = {
     type: "image" | "code";
@@ -32,6 +33,7 @@ function serializePost(
         id: post.id.toString(),
         content: post.content,
         createdAt: post.createdAt,
+        editedAt: post.editedAt,
         user: post.user,
         attachments: post.attachments.map((a) => ({ ...a, id: a.id.toString(), postId: a.postId.toString() })),
         likeCount: post._count.likes,
@@ -168,6 +170,12 @@ router.post("/", requireOnboarded, async (req: Request, res: Response) => {
         return;
     }
 
+    const codeBlockCount = (body.attachments ?? []).filter((a) => a.type === "code").length;
+    if (codeBlockCount > MAX_CODE_BLOCKS) {
+        res.status(400).json({ error: `max ${MAX_CODE_BLOCKS} code blocks per post` });
+        return;
+    }
+
     const post = await prisma.post.create({
         data: {
             userId: req.user!.id,
@@ -186,6 +194,58 @@ router.post("/", requireOnboarded, async (req: Request, res: Response) => {
     });
 
     res.status(201).json({ post: serializePost(post, new Set(), new Set()) });
+});
+
+router.patch("/:id", requireOnboarded, async (req: Request, res: Response) => {
+    const postId = BigInt(String(req.params.id));
+    const existing = await prisma.post.findUnique({ where: { id: postId }, select: { userId: true, isDeleted: true } });
+
+    if (!existing || existing.isDeleted) {
+        res.status(404).json({ error: "Post not found" });
+        return;
+    }
+    if (existing.userId !== req.user!.id) {
+        res.status(403).json({ error: "You can only edit your own posts" });
+        return;
+    }
+
+    const body = req.body as { content?: string; attachments?: AttachmentInput[] };
+    const content = body.content?.trim();
+
+    if (!content || content.length === 0 || content.length > MAX_CONTENT_LENGTH) {
+        res.status(400).json({ error: `content must be 1-${MAX_CONTENT_LENGTH} characters` });
+        return;
+    }
+
+    const codeBlockCount = (body.attachments ?? []).filter((a) => a.type === "code").length;
+    if (codeBlockCount > MAX_CODE_BLOCKS) {
+        res.status(400).json({ error: `max ${MAX_CODE_BLOCKS} code blocks per post` });
+        return;
+    }
+
+    const post = await prisma.$transaction(async (tx) => {
+        await tx.postAttachment.deleteMany({ where: { postId } });
+        return tx.post.update({
+            where: { id: postId },
+            data: {
+                content,
+                editedAt: new Date(),
+                attachments: {
+                    create: (body.attachments ?? []).map((a) => ({
+                        type: a.type,
+                        orderIndex: a.orderIndex,
+                        imageUrl: a.imageUrl,
+                        codeContent: a.codeContent,
+                        codeLanguage: a.codeLanguage
+                    }))
+                }
+            },
+            include: POST_INCLUDE
+        });
+    });
+
+    const { likedIds, repostedIds } = await viewerInteractionSets(req.user!.id, [post.id]);
+    res.json({ post: serializePost(post, likedIds, repostedIds) });
 });
 
 router.post("/:id/like", requireOnboarded, async (req: Request, res: Response) => {

@@ -106,13 +106,13 @@ export default function DiscoverDeck({ initialQueue }: { initialQueue: Candidate
                 <p className="text-lg font-bold text-white">
                     {exhausted ? "No hay más devs para descubrir por ahora." : "Cargando…"}
                 </p>
-                {exhausted && <p className="mt-1 text-sm text-text-muted">Volvé más tarde para ver nuevos perfiles.</p>}
+                {exhausted && <p className="mt-1 text-sm text-text-muted">Vuelve más tarde para ver nuevos perfiles.</p>}
             </div>
         );
     }
 
     return (
-        <div className="mx-auto w-full max-w-sm">
+        <div className="mx-auto w-full max-w-sm sm:max-w-md md:max-w-lg">
             <div
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
@@ -143,27 +143,27 @@ export default function DiscoverDeck({ initialQueue }: { initialQueue: Candidate
                     </div>
                 )}
 
-                <div className="relative h-28 bg-gradient-to-br from-primary/30 to-surface-hover">
+                <div className="relative h-28 bg-gradient-to-br from-primary/30 to-surface-hover sm:h-36 md:h-44">
                     {current.bannerUrl && (
                         <img src={current.bannerUrl} alt="" className="h-full w-full object-cover" />
                     )}
-                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 sm:-bottom-12 md:-bottom-14">
                         {current.avatarUrl ? (
                             <img
                                 src={current.avatarUrl}
                                 alt={current.fullName}
-                                className="h-20 w-20 rounded-full border-4 border-surface object-cover"
+                                className="h-20 w-20 rounded-full border-4 border-surface object-cover sm:h-24 sm:w-24 md:h-28 md:w-28"
                             />
                         ) : (
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-surface bg-surface-hover text-2xl font-bold text-primary">
+                            <div className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-surface bg-surface-hover text-2xl font-bold text-primary sm:h-24 sm:w-24 md:h-28 md:w-28">
                                 {current.fullName.charAt(0).toUpperCase()}
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="px-6 pt-12 pb-6 text-center">
-                    <p className="flex items-center justify-center gap-1 text-lg font-bold text-white">
+                <div className="px-6 pt-12 pb-6 text-center sm:pt-14 sm:pb-8 md:pt-16">
+                    <p className="flex items-center justify-center gap-1 text-lg font-bold text-white sm:text-xl">
                         {current.fullName}
                         {current.isVerified && <span className="text-primary">✓</span>}
                     </p>
@@ -195,15 +195,15 @@ export default function DiscoverDeck({ initialQueue }: { initialQueue: Candidate
                     )}
                 </div>
 
-                <div className="flex items-center justify-center gap-6 border-t border-border py-4">
+                <div className="flex items-center justify-center gap-6 border-t border-border py-4 sm:gap-8 sm:py-5">
                     <button
                         type="button"
                         onClick={() => act("pass")}
                         disabled={loading}
                         aria-label="Pasar"
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-hover text-white transition hover:brightness-110 disabled:opacity-40"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-surface-hover text-white transition hover:brightness-110 disabled:opacity-40 sm:h-14 sm:w-14"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 sm:h-6 sm:w-6">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
@@ -213,9 +213,9 @@ export default function DiscoverDeck({ initialQueue }: { initialQueue: Candidate
                         onClick={() => act("like")}
                         disabled={loading}
                         aria-label="Seguir"
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-black transition hover:brightness-90 disabled:opacity-40"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-black transition hover:brightness-90 disabled:opacity-40 sm:h-14 sm:w-14"
                     >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5 sm:h-6 sm:w-6">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                             <circle cx="9" cy="7" r="4"></circle>
                             <line x1="19" y1="8" x2="19" y2="14"></line>
@@ -224,7 +224,7 @@ export default function DiscoverDeck({ initialQueue }: { initialQueue: Candidate
                     </button>
                 </div>
             </div>
-            <p className="mt-4 text-center text-xs text-text-muted">« Deslizá para pasar o seguir »</p>
+            <p className="mt-4 text-center text-xs text-text-muted">« Desliza para pasar o seguir »</p>
         </div>
     );
 }

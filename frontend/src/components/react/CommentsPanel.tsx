@@ -117,7 +117,7 @@ export default function CommentsPanel({ postId }: { postId: string }) {
                     onKeyDown={(e) => {
                         if (e.key === "Enter") submit();
                     }}
-                    placeholder="Agregá un comentario..."
+                    placeholder="Agrega un comentario..."
                     className="flex-1 rounded-lg border border-border bg-bg px-3 py-1.5 text-sm text-white placeholder-text-muted outline-none focus:border-primary"
                 />
                 <button

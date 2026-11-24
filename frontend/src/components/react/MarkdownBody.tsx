@@ -7,7 +7,7 @@ marked.use({
     renderer: {
         code({ text, lang }) {
             const { html, language } = highlightCode(text, lang);
-            return `<pre><code class="hljs language-${language}">${html}</code></pre>`;
+            return `<pre class="overflow-x-auto"><code class="hljs language-${language}">${html}</code></pre>`;
         }
     }
 });
@@ -28,12 +28,12 @@ export default function MarkdownBody({ source, className }: { source: string; cl
     }, [source]);
 
     if (html === null) {
-        return <p className={`whitespace-pre-wrap ${className ?? ""}`}>{source}</p>;
+        return <p className={`whitespace-pre-wrap break-words ${className ?? ""}`}>{source}</p>;
     }
 
     return (
         <div
-            className={`prose prose-sm prose-invert max-w-none ${className ?? ""}`}
+            className={`prose prose-sm prose-invert max-w-none break-words ${className ?? ""}`}
             dangerouslySetInnerHTML={{ __html: html }}
         />
     );

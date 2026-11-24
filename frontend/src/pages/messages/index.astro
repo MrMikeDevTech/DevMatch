@@ -18,9 +18,9 @@ const conversations = data?.conversations ?? [];
 
 <AppLayout title="Mensajes" active="messages">
     <div class="flex h-full overflow-hidden">
-        <ConversationsAside conversations={conversations} />
-        <div class="flex flex-1 items-center justify-center">
-            <p class="text-sm text-text-muted">Elegí una conversación para empezar a chatear.</p>
+        <ConversationsAside conversations={conversations} mobileVisible />
+        <div class="hidden flex-1 items-center justify-center md:flex">
+            <p class="text-sm text-text-muted">Elige una conversación para empezar a chatear.</p>
         </div>
     </div>
 </AppLayout>

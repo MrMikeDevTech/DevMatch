@@ -47,7 +47,7 @@ const posts = postsData?.posts ?? [];
         </div>
 
         <div class="px-6">
-            <div class="-mt-12 flex items-end justify-between">
+            <div class="-mt-12 flex flex-wrap items-end justify-between gap-3">
                 <Avatar
                     src={profile.avatarUrl}
                     alt={profile.fullName}
@@ -108,30 +108,28 @@ const posts = postsData?.posts ?? [];
                 <span><strong class="text-white">{profile._count.posts}</strong> <span class="text-text-muted">Posts</span></span>
             </div>
 
-            <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[320px_1fr]">
-                <div>
-                    {
-                        readmeHtml && (
-                            <div class="rounded-xl border border-border bg-surface p-5">
-                                <p class="mb-3 text-xs font-semibold tracking-wide text-text-muted uppercase">
-                                    README.md
-                                </p>
-                                <div
-                                    class="prose prose-sm prose-invert max-w-none text-sm text-white"
-                                    set:html={readmeHtml}
-                                />
-                            </div>
-                        )
-                    }
-                </div>
+            <div class={`mt-8 grid grid-cols-1 gap-8 ${readmeHtml ? "lg:grid-cols-[320px_1fr]" : ""}`}>
+                {
+                    readmeHtml && (
+                        <div class="rounded-xl border border-border bg-surface p-5">
+                            <p class="mb-3 text-xs font-semibold tracking-wide text-text-muted uppercase">
+                                README.md
+                            </p>
+                            <div
+                                class="prose prose-sm prose-invert max-w-none text-sm text-white"
+                                set:html={readmeHtml}
+                            />
+                        </div>
+                    )
+                }
 
-                <div>
+                <div class="min-w-0">
                     <div class="border-b border-border">
                         <span class="inline-block border-b-2 border-primary px-1 pb-3 text-sm font-semibold text-white">
                             Posts
                         </span>
                     </div>
-                    <PostList client:load posts={posts} />
+                    <PostList client:load posts={posts} currentUserId={user?.id} />
                 </div>
             </div>
         </div>

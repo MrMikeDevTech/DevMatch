@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { highlightCode } from "@/lib/highlight";
+import ImageLightbox from "@/components/react/ImageLightbox";
 
 type Message = {
     id: string;
@@ -15,16 +17,19 @@ function formatTime(iso: string): string {
 
 export default function MessageBubble({ message, isMine }: { message: Message; isMine: boolean }) {
     const code = message.codeContent ? highlightCode(message.codeContent, message.codeLanguage ?? undefined) : null;
+    const [previewOpen, setPreviewOpen] = useState(false);
 
     return (
         <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
             <div
                 className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${
-                    isMine ? "bg-primary text-black" : "bg-surface-hover text-white"
+                    isMine ? "bg-primary text-white" : "bg-surface-hover text-white"
                 }`}
             >
                 {message.imageUrl && (
-                    <img src={message.imageUrl} alt="" className="mb-1 max-h-64 rounded-lg object-cover" />
+                    <button type="button" onClick={() => setPreviewOpen(true)} className="block">
+                        <img src={message.imageUrl} alt="" className="mb-1 max-h-64 rounded-lg object-cover" />
+                    </button>
                 )}
                 {code && (
                     <pre className="mb-1 overflow-x-auto rounded-lg border border-border bg-black/30 p-3 text-xs">
@@ -35,10 +40,13 @@ export default function MessageBubble({ message, isMine }: { message: Message; i
                     </pre>
                 )}
                 {message.content && <p className="whitespace-pre-wrap break-words">{message.content}</p>}
-                <p className={`mt-1 text-[10px] ${isMine ? "text-black/60" : "text-text-muted"}`}>
+                <p className={`mt-1 text-[10px] ${isMine ? "text-white/70" : "text-text-muted"}`}>
                     {formatTime(message.createdAt)}
                 </p>
             </div>
+            {previewOpen && message.imageUrl && (
+                <ImageLightbox src={message.imageUrl} onClose={() => setPreviewOpen(false)} />
+            )}
         </div>
     );
 }
